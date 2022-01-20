@@ -4,6 +4,7 @@ import githubLogo from './assets/github.svg';
 
 import { ethers } from "ethers";
 import myEpicNft from './utils/MyEpicNFT.json';
+import CanvasDraw from "react-canvas-draw";
 
 // Constants
 const GITHUB_HANDLE = 'kuriakinzeng';
@@ -176,6 +177,13 @@ const App = () => {
           <p className="sub-text">
             Pickle Rick. Evil Morty. Space Beth. And many more.
           </p>
+          <div>
+            <CanvasDraw
+              style={{
+                margin: "auto"
+              }}
+            />
+          </div>
           <p className="remaining-text">
             Only {TOTAL_MINT_COUNT - totalNftMinted} left
           </p>
