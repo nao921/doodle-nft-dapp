@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import './styles/App.css';
 import githubLogo from './assets/github.svg';
 
@@ -15,6 +15,7 @@ const TOTAL_MINT_COUNT = 50;
 const CONTRACT_ADDRESS = '0x4454F2F620307d9607dAE08e9Bdb28068c6c03A3'
 
 const App = () => {
+  const canvas = useRef();
 
   const [currentAccount, setCurrentAccount] = useState("");
   const [totalNftMinted, setTotalNftMinted] = useState("");
@@ -178,7 +179,30 @@ const App = () => {
             Pickle Rick. Evil Morty. Space Beth. And many more.
           </p>
           <div>
+            <button
+              onClick={() => {
+                canvas.current.eraseAll();
+              }}
+            >
+              Erase
+            </button>
+            <button
+              onClick={() => {
+                canvas.current.undo();
+              }}
+            >
+              Undo
+            </button>
+            <button
+            onClick={() => {
+              console.log(canvas.current.getDataURL());
+              alert("DataURL written to console")
+            }}
+          >
+            GetDataURL
+          </button>
             <CanvasDraw
+              ref={canvas}
               style={{
                 margin: "auto"
               }}
