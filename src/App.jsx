@@ -12,7 +12,7 @@ const GITHUB_LINK = `https://github.com/${GITHUB_HANDLE}`;
 const CREATOR_NAME = 'KZ';
 const OPENSEA_LINK = '';
 const TOTAL_MINT_COUNT = 50;
-const CONTRACT_ADDRESS = '0x4454F2F620307d9607dAE08e9Bdb28068c6c03A3'
+const CONTRACT_ADDRESS = '0x34808f4Aeba69121c04F3F311c9aCD2792570aFB' //'0x4454F2F620307d9607dAE08e9Bdb28068c6c03A3'
 
 const App = () => {
   const canvas = useRef();
@@ -20,6 +20,7 @@ const App = () => {
   const [currentAccount, setCurrentAccount] = useState("");
   const [totalNftMinted, setTotalNftMinted] = useState("");
   const [mintingFlag, setMintingFlag] = useState("");
+  const [doodleData, setDoodleData] = useState("");
 
   const checkIfWalletIsConnected = async () => {
     const { ethereum } = window;
@@ -47,7 +48,7 @@ const App = () => {
     try {
       const { ethereum } = window;
 
-      if (ethereum) {
+      if (ethereum && doodleData !== '') {
         let chainId = await ethereum.request({ method: 'eth_chainId' });
         console.log("Connected to chain ", chainId);
         const rinkebyChainId = "0x4";
@@ -60,7 +61,7 @@ const App = () => {
         const signer = provider.getSigner();
         const connectedContract = new ethers.Contract(CONTRACT_ADDRESS, myEpicNft.abi, signer);
 
-        let txn = await connectedContract.makeAnEpicNFT();
+        let txn = await connectedContract.makeAnEpicNFT(doodleData);
         console.log('Mining...');
         setMintingFlag(true);
 
@@ -90,7 +91,7 @@ const App = () => {
         connectedContract.on('NewEpicNFTMinted', (from, tokenId) => {
           console.log(from, tokenId.toNumber());
           
-          alert(`Hey there! We've minted your NFT and sent it to your wallet. It may be blank right now. It can take a max of 10 min to show up on Rarible. Here's the link: https://rinkeby.rarible.com/token/${CONTRACT_ADDRESS}:${tokenId.toNumber()}`);
+          alert(`Hey there! We've minted your NFT and sent it to your wallet. It may be blank right now. It can take a max of 10 min to show up on OpenSea. Here's the link: https://testnets.opensea.io/assets/${CONTRACT_ADDRESS}/${tokenId.toNumber()}`);
 
           updateTotalNFTsMintedSoFar();
         });
@@ -154,14 +155,14 @@ const App = () => {
     ) 
     :
     (
-      <button className="cta-button mint-button" onClick={askContractToMintNft}>
+      <button className="cta-button mint-button" onClick={() => askContractToMintNft()}>
         Mint NFT
       </button>
     );
   }
 
   const viewCollection = () => {
-    const link = `https://rinkeby.rarible.com/collection/${CONTRACT_ADDRESS}`
+    const link = `https://testnets.opensea.io/assets/${CONTRACT_ADDRESS}`
     window.open(link, "blank");
   }
 
@@ -195,8 +196,8 @@ const App = () => {
             </button>
             <button
             onClick={() => {
+              setDoodleData(canvas.current.getDataURL())
               console.log(canvas.current.getDataURL());
-              alert("DataURL written to console")
             }}
           >
             GetDataURL
