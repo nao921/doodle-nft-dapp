@@ -155,9 +155,41 @@ const App = () => {
     ) 
     :
     (
-      <button className="cta-button mint-button" onClick={() => askContractToMintNft()}>
-        Mint NFT
-      </button>
+      <div>
+        <div>
+          <button
+            onClick={() => {
+              canvas.current.eraseAll();
+            }}
+          >
+            Erase
+          </button>
+          <button
+            onClick={() => {
+              canvas.current.undo();
+            }}
+          >
+            Undo
+          </button>
+          <button
+          onClick={() => {
+            setDoodleData(canvas.current.getDataURL())
+            console.log(canvas.current.getDataURL());
+          }}
+        >
+          GetDataURL
+        </button>
+          <CanvasDraw
+            ref={canvas}
+            style={{
+              margin: "auto"
+            }}
+          />
+        </div>
+        <button className="cta-button mint-button" onClick={() => askContractToMintNft()}>
+          Mint NFT
+        </button>
+      </div>
     );
   }
 
@@ -175,43 +207,11 @@ const App = () => {
     <div className="App">
       <div className="container">
         <div className="header-container">
-          <p className="header gradient-text">Rick & Morty Names NFT Collection</p>
+          <p className="header gradient-text">Doodle NFT Collection</p>
           <p className="sub-text">
-            Pickle Rick. Evil Morty. Space Beth. And many more.
+            Doodle. Mint. Profit.
           </p>
-          <div>
-            <button
-              onClick={() => {
-                canvas.current.eraseAll();
-              }}
-            >
-              Erase
-            </button>
-            <button
-              onClick={() => {
-                canvas.current.undo();
-              }}
-            >
-              Undo
-            </button>
-            <button
-            onClick={() => {
-              setDoodleData(canvas.current.getDataURL())
-              console.log(canvas.current.getDataURL());
-            }}
-          >
-            GetDataURL
-          </button>
-            <CanvasDraw
-              ref={canvas}
-              style={{
-                margin: "auto"
-              }}
-            />
-          </div>
-          <p className="remaining-text">
-            Only {TOTAL_MINT_COUNT - totalNftMinted} left
-          </p>
+          
           <div>
             <button className="cta-button view-collection-button" onClick={viewCollection}>
                 View Collection on Rarible
