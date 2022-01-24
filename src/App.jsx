@@ -10,9 +10,10 @@ import CanvasDraw from "react-canvas-draw";
 const GITHUB_HANDLE = 'kuriakinzeng';
 const GITHUB_LINK = `https://github.com/${GITHUB_HANDLE}`;
 const CREATOR_NAME = 'KZ';
-const OPENSEA_LINK = '';
+const OPENSEA_COLLECTION = 'doodle-nft-ylb2s1uykm'
+const OPENSEA_LINK = `https://testnets.opensea.io/assets/${OPENSEA_COLLECTION}`;
 const TOTAL_MINT_COUNT = 50;
-const CONTRACT_ADDRESS = '0x34808f4Aeba69121c04F3F311c9aCD2792570aFB' //'0x4454F2F620307d9607dAE08e9Bdb28068c6c03A3'
+const CONTRACT_ADDRESS = '0xe606a90181235ecA2af8fA1D69e5e1659eDc1501'
 
 const App = () => {
   const canvas = useRef();
@@ -70,7 +71,11 @@ const App = () => {
         console.log(`Mined, see txn https://rinkeby.etherscan.io/tx/${txn.hash}`);
 
       } else {
-        console.log("Ethereum object doesn't exist");
+        if (!ethereum) {
+          console.log("Ethereum object doesn't exist");
+        } else {
+          alert("Please click Done before minting");
+        }
       }
       
     } catch (error) {
@@ -177,7 +182,7 @@ const App = () => {
             console.log(canvas.current.getDataURL());
           }}
         >
-          GetDataURL
+          Done
         </button>
           <CanvasDraw
             ref={canvas}
@@ -194,8 +199,7 @@ const App = () => {
   }
 
   const viewCollection = () => {
-    const link = `https://testnets.opensea.io/assets/${CONTRACT_ADDRESS}`
-    window.open(link, "blank");
+    window.open(OPENSEA_LINK, "blank");
   }
 
   useEffect(() => {
@@ -214,7 +218,7 @@ const App = () => {
           
           <div>
             <button className="cta-button view-collection-button" onClick={viewCollection}>
-                View Collection on Rarible
+                View Collection on OpenSea
             </button>
           </div>
           {currentAccount === "" ? renderNotConnectedContainer() 
