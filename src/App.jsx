@@ -10,9 +10,10 @@ import CanvasDraw from "react-canvas-draw";
 const GITHUB_HANDLE = 'kuriakinzeng';
 const GITHUB_LINK = `https://github.com/${GITHUB_HANDLE}`;
 const CREATOR_NAME = 'KZ';
-const OPENSEA_LINK = '';
+const OPENSEA_COLLECTION = 'doodle-nft-ylb2s1uykm'
+const OPENSEA_LINK = `https://testnets.opensea.io/assets/${OPENSEA_COLLECTION}`;
 const TOTAL_MINT_COUNT = 50;
-const CONTRACT_ADDRESS = '0x4454F2F620307d9607dAE08e9Bdb28068c6c03A3'
+const CONTRACT_ADDRESS = '0xe606a90181235ecA2af8fA1D69e5e1659eDc1501'
 
 const App = () => {
   const canvas = useRef();
@@ -20,6 +21,7 @@ const App = () => {
   const [currentAccount, setCurrentAccount] = useState("");
   const [totalNftMinted, setTotalNftMinted] = useState("");
   const [mintingFlag, setMintingFlag] = useState("");
+  const [doodleData, setDoodleData] = useState("");
 
   const checkIfWalletIsConnected = async () => {
     const { ethereum } = window;
@@ -47,7 +49,7 @@ const App = () => {
     try {
       const { ethereum } = window;
 
-      if (ethereum) {
+      if (ethereum && doodleData !== '') {
         let chainId = await ethereum.request({ method: 'eth_chainId' });
         console.log("Connected to chain ", chainId);
         const rinkebyChainId = "0x4";
@@ -60,7 +62,7 @@ const App = () => {
         const signer = provider.getSigner();
         const connectedContract = new ethers.Contract(CONTRACT_ADDRESS, myEpicNft.abi, signer);
 
-        let txn = await connectedContract.makeAnEpicNFT();
+        let txn = await connectedContract.makeAnEpicNFT(doodleData);
         console.log('Mining...');
         setMintingFlag(true);
 
@@ -69,7 +71,11 @@ const App = () => {
         console.log(`Mined, see txn https://rinkeby.etherscan.io/tx/${txn.hash}`);
 
       } else {
-        console.log("Ethereum object doesn't exist");
+        if (!ethereum) {
+          console.log("Ethereum object doesn't exist");
+        } else {
+          alert("Please click Done before minting");
+        }
       }
       
     } catch (error) {
@@ -90,7 +96,7 @@ const App = () => {
         connectedContract.on('NewEpicNFTMinted', (from, tokenId) => {
           console.log(from, tokenId.toNumber());
           
-          alert(`Hey there! We've minted your NFT and sent it to your wallet. It may be blank right now. It can take a max of 10 min to show up on Rarible. Here's the link: https://rinkeby.rarible.com/token/${CONTRACT_ADDRESS}:${tokenId.toNumber()}`);
+          alert(`Hey there! We've minted your NFT and sent it to your wallet. It may be blank right now. It can take a max of 10 min to show up on OpenSea. Here's the link: https://testnets.opensea.io/assets/${CONTRACT_ADDRESS}/${tokenId.toNumber()}`);
 
           updateTotalNFTsMintedSoFar();
         });
@@ -154,15 +160,46 @@ const App = () => {
     ) 
     :
     (
-      <button className="cta-button mint-button" onClick={askContractToMintNft}>
-        Mint NFT
-      </button>
+      <div>
+        <div>
+          <button
+            onClick={() => {
+              canvas.current.eraseAll();
+            }}
+          >
+            Erase
+          </button>
+          <button
+            onClick={() => {
+              canvas.current.undo();
+            }}
+          >
+            Undo
+          </button>
+          <button
+          onClick={() => {
+            setDoodleData(canvas.current.getDataURL())
+            console.log(canvas.current.getDataURL());
+          }}
+        >
+          Done
+        </button>
+          <CanvasDraw
+            ref={canvas}
+            style={{
+              margin: "auto"
+            }}
+          />
+        </div>
+        <button className="cta-button mint-button" onClick={() => askContractToMintNft()}>
+          Mint NFT
+        </button>
+      </div>
     );
   }
 
   const viewCollection = () => {
-    const link = `https://rinkeby.rarible.com/collection/${CONTRACT_ADDRESS}`
-    window.open(link, "blank");
+    window.open(OPENSEA_LINK, "blank");
   }
 
   useEffect(() => {
@@ -174,46 +211,14 @@ const App = () => {
     <div className="App">
       <div className="container">
         <div className="header-container">
-          <p className="header gradient-text">Rick & Morty Names NFT Collection</p>
+          <p className="header gradient-text">Doodle NFT Collection</p>
           <p className="sub-text">
-            Pickle Rick. Evil Morty. Space Beth. And many more.
+            Doodle. Mint. Profit.
           </p>
-          <div>
-            <button
-              onClick={() => {
-                canvas.current.eraseAll();
-              }}
-            >
-              Erase
-            </button>
-            <button
-              onClick={() => {
-                canvas.current.undo();
-              }}
-            >
-              Undo
-            </button>
-            <button
-            onClick={() => {
-              console.log(canvas.current.getDataURL());
-              alert("DataURL written to console")
-            }}
-          >
-            GetDataURL
-          </button>
-            <CanvasDraw
-              ref={canvas}
-              style={{
-                margin: "auto"
-              }}
-            />
-          </div>
-          <p className="remaining-text">
-            Only {TOTAL_MINT_COUNT - totalNftMinted} left
-          </p>
+          
           <div>
             <button className="cta-button view-collection-button" onClick={viewCollection}>
-                View Collection on Rarible
+                View Collection on OpenSea
             </button>
           </div>
           {currentAccount === "" ? renderNotConnectedContainer() 
